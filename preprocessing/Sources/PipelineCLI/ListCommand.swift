@@ -1,4 +1,5 @@
 import ArgumentParser
+import Foundation
 import Pipeline
 
 struct List: AsyncParsableCommand {
@@ -10,21 +11,24 @@ struct List: AsyncParsableCommand {
     var verbose = false
 
     func run() async throws {
-        print("Listing processed works...")
+        let config = try SupabaseWriter.ConnectionConfig.fromEnvironment()
+        let conn = try await SupabaseWriter.connect(config: config)
+        let works = try await SupabaseWriter.listWorks(on: conn)
+        try await conn.closeGracefully()
 
-        // Note: Full implementation requires Supabase connection to:
-        // 1. SELECT id, title, author, token_count, processed_at FROM works
-        //    ORDER BY processed_at DESC
-        // 2. Format as aligned table output
-        //
-        // For now, prints the expected output format.
-        // Actual DB queries will be added when Supabase is configured.
+        if works.isEmpty {
+            print("No works found.")
+            return
+        }
 
-        print("  ⚠ DB connection not yet configured")
+        // Simple table output (safe for CJK characters)
+        print("Works:")
         print("")
-        print("Expected output format:")
-        print("ID                                    Title              Author      Tokens  Processed")
-        print("────────────────────────────────────  ─────────────────  ──────────  ──────  ──────────────────")
-        print("a1b2c3d4-...                          走れメロス          太宰治        8,432  2026-02-28 14:30")
+        for work in works {
+            let idShort = String(work.id.prefix(8)) + "..."
+            print("  \(idShort)  \(work.title)  \(work.author)  \(work.tokenCount) tokens  \(work.processedAt)")
+        }
+        print("")
+        print("\(works.count) works total")
     }
 }

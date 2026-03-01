@@ -28,15 +28,30 @@ struct Process: AsyncParsableCommand {
         let work = try AozoraParser.parse(data: rawData, sourceURL: aozoraURL)
         log("       ✓ \(work.author) — \(work.title) (\(work.lines.count) lines)")
 
-        // Step 2: Tokenize with MeCab
+        // Step 2: Tokenize with MeCab (track sentences)
         log("[2/6] Tokenizing (MeCab)...")
         let mecab = try MeCabBridge()
-        var allTokens: [MeCabToken] = []
+        let workID = UUID().uuidString.lowercased()
+
+        // Build sentences + per-sentence tokens
+        var sentences: [SentenceRecord] = []
+        var sentenceTokens: [(sentenceID: String, tokens: [MeCabToken])] = []
+        var sentencePosition = 0
+
         for line in work.lines where !line.isHeading {
             let lineTokens = try mecab.tokenize(line.text)
-            allTokens.append(contentsOf: lineTokens)
+            let sentence = SentenceRecord(
+                workID: workID,
+                position: sentencePosition,
+                text: line.text
+            )
+            sentences.append(sentence)
+            sentenceTokens.append((sentenceID: sentence.id, tokens: lineTokens))
+            sentencePosition += 1
         }
-        log("       ✓ \(allTokens.count) tokens")
+
+        let allTokens = sentenceTokens.flatMap { $0.tokens }
+        log("       ✓ \(allTokens.count) tokens, \(sentences.count) sentences")
 
         // Step 3: AI correction (optional)
         let correctedTokens: [MeCabToken]
@@ -88,7 +103,6 @@ struct Process: AsyncParsableCommand {
                 let explanations = try await AIExplainer.explainWithAI(
                     entries: wordEntries, apiKey: apiKey
                 )
-                // Merge explanations back
                 let explanationMap = Dictionary(
                     uniqueKeysWithValues: explanations.map { ($0.baseForm, $0.explanation) }
                 )
@@ -108,18 +122,60 @@ struct Process: AsyncParsableCommand {
             log("Dry run summary:")
             log("  Work: \(work.title) by \(work.author)")
             log("  Tokens: \(correctedTokens.count)")
+            log("  Sentences: \(sentences.count)")
             log("  Word entries: \(wordEntries.count)")
             log("  JMdict matches: \(matchCount)")
         } else {
             log("[6/6] Writing to Supabase...")
             let config = try SupabaseWriter.ConnectionConfig.fromEnvironment()
-            let workPayload = SupabaseWriter.workPayload(from: work)
-            let tokenBatch = SupabaseWriter.tokenBatch(
-                from: correctedTokens, workID: workPayload.id
-            )
-            log("       ✓ 1 work, \(tokenBatch.count) tokens, \(wordEntries.count) word entries")
-            // Note: actual DB writes will be implemented when Supabase is configured
-            log("       ⚠ DB write not yet implemented (use --dry-run for now)")
+            let conn = try await SupabaseWriter.connect(config: config)
+
+            // Check for existing work
+            if let existingID = try await SupabaseWriter.workExists(aozoraURL: aozoraURL, on: conn) {
+                log("       ⚠ Work already exists (id: \(existingID)), skipping")
+                try await conn.close()
+            } else {
+                let workPayload = SupabaseWriter.WorkPayload(
+                    id: workID, title: work.title,
+                    author: work.author, aozoraURL: aozoraURL
+                )
+
+                // 1. Insert work
+                try await SupabaseWriter.insertWork(workPayload, on: conn)
+
+                // 2. Insert sentences
+                try await SupabaseWriter.insertSentences(sentences, on: conn)
+
+                // 3. Upsert word entries → get ID map
+                let wordEntryIDMap = try await SupabaseWriter.upsertWordEntries(wordEntries, on: conn)
+
+                // 4. Build and insert tokens (with sentence_id + word_entry_id)
+                var allTokenRecords: [SupabaseWriter.TokenRecord] = []
+                var correctedOffset = 0
+                for st in sentenceTokens {
+                    let count = st.tokens.count
+                    let sentenceCorrected = Array(correctedTokens[correctedOffset..<correctedOffset + count])
+                    let batch = SupabaseWriter.tokenBatch(
+                        from: sentenceCorrected,
+                        workID: workID,
+                        startPosition: correctedOffset,
+                        sentenceID: st.sentenceID,
+                        wordEntryIDMap: wordEntryIDMap
+                    )
+                    allTokenRecords.append(contentsOf: batch)
+                    correctedOffset += count
+                }
+
+                try await SupabaseWriter.insertTokens(allTokenRecords, on: conn)
+
+                // 5. Update token count
+                try await SupabaseWriter.updateTokenCount(
+                    workID: workID, count: allTokenRecords.count, on: conn
+                )
+
+                log("       ✓ 1 work, \(sentences.count) sentences, \(allTokenRecords.count) tokens, \(wordEntries.count) word entries")
+                try await conn.close()
+            }
         }
 
         let elapsed = Date().timeIntervalSince(startTime)
