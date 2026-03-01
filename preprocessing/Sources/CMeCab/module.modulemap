@@ -1,0 +1,5 @@
+module CMeCab {
+    header "include/shim.h"
+    link "mecab"
+    export *
+}

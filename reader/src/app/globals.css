@@ -1,0 +1,373 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf9f6;
+  --foreground: #1a1a1a;
+  --accent: #4a6741;
+  --border: #e5e2dc;
+  --muted: #6b6b6b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a1a1a;
+    --foreground: #e8e6e3;
+    --accent: #8fbc8b;
+    --border: #333;
+    --muted: #999;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+  line-height: 1.8;
+}
+
+/* 閱讀區域容器 */
+.reading-container {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* 頁面標題 */
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.02em;
+}
+
+/* 作品清單 */
+.work-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.work-list-item a {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.work-list-item a:hover {
+  background-color: var(--border);
+}
+
+.work-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.work-author {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.work-year {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.work-token-count {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+/* 作品閱讀頁 */
+.work-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.work-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+}
+
+.work-header .author {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* Token 文字流 */
+.token-flow {
+  line-height: 2;
+  font-size: 1.1rem;
+}
+
+/* TokenSpan */
+.token-span {
+  display: inline;
+}
+
+.token-span.interactive {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-bottom: 1px dotted transparent;
+  transition: background-color 0.1s ease, border-bottom-color 0.1s ease;
+}
+
+.token-span.interactive:hover {
+  background-color: rgba(74, 103, 65, 0.1);
+  border-bottom-color: var(--accent);
+  border-bottom-style: solid;
+}
+
+/* US4 T053: Graduated vocabulary underline intensity */
+.token-span.interactive.vocab-underline-light {
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.token-span.interactive.vocab-underline-light:hover {
+  border-bottom: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.token-span.interactive.vocab-underline-dark {
+  border-bottom: 2px solid var(--accent);
+}
+
+.token-span.interactive.vocab-underline-dark:hover {
+  border-bottom-width: 3px;
+}
+
+/* 空狀態 & 錯誤 */
+.empty-state,
+.error {
+  text-align: center;
+  color: var(--muted);
+  padding: 3rem 1rem;
+  font-size: 1rem;
+}
+
+.error {
+  color: #c53030;
+}
+
+/* 返回連結 */
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.back-link:hover {
+  color: var(--foreground);
+}
+
+/* ===== Tooltip ===== */
+.tooltip-panel {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  padding: 0.75rem 1rem;
+  max-width: 20rem;
+  min-width: 12rem;
+  z-index: 100;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.tooltip-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tooltip-word-info {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.tooltip-reading {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.tooltip-pos {
+  font-size: 0.75rem;
+  color: var(--muted);
+  background: var(--border);
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+}
+
+.tooltip-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.tooltip-close:hover {
+  color: var(--foreground);
+}
+
+.tooltip-body {
+  font-size: 0.85rem;
+}
+
+.tooltip-definition p {
+  margin: 0;
+}
+
+.tooltip-ai-explanation {
+  margin: 0 0 0.5rem 0;
+  color: var(--foreground);
+}
+
+.tooltip-cross-text h4 {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0.5rem 0 0.25rem 0;
+  font-weight: 600;
+}
+
+.tooltip-cross-text ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tooltip-cross-text li {
+  padding: 0.25rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.tooltip-example-sentence {
+  display: block;
+}
+
+.tooltip-example-source {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.tooltip-loading,
+.tooltip-error,
+.tooltip-no-data {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* T044: Vocab action buttons */
+.tooltip-actions {
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tooltip-action-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.tooltip-action-btn:hover {
+  background-color: var(--border);
+}
+
+/* ===== Responsive Layout (T037) ===== */
+
+/* Touch-friendly tap targets: min 44px height for interactive tokens */
+@media (pointer: coarse) {
+  .token-span.interactive {
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.125rem;
+  }
+}
+
+/* Mobile: smaller screens */
+@media (max-width: 640px) {
+  .reading-container {
+    padding: 1rem 0.75rem;
+  }
+
+  .work-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .token-flow {
+    font-size: 1rem;
+    line-height: 2.2;
+  }
+
+  .tooltip-panel {
+    max-width: calc(100vw - 2rem);
+    min-width: 0;
+  }
+
+  .page-title {
+    font-size: 1.25rem;
+  }
+
+  .work-list-item a {
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    padding: 0.75rem;
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .reading-container {
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+/* Desktop: reading-optimized width constraint */
+@media (min-width: 1025px) {
+  .reading-container {
+    max-width: 44rem;
+    padding: 2.5rem 2rem;
+  }
+
+  .token-flow {
+    font-size: 1.15rem;
+  }
+}

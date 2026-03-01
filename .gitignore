@@ -1,0 +1,46 @@
+# Swift
+.build/
+DerivedData/
+*.swiftpm/
+Packages/
+*.xcodeproj/
+*.xcworkspace/
+
+# Node.js / Next.js
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Data files (large, downloaded separately)
+preprocessing/data/*.json
+preprocessing/data/*.tgz
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Vercel
+.vercel
+
+# Coverage
+coverage/
+.nyc_output/

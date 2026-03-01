@@ -43,6 +43,9 @@ reader.
 4. **Given** the user clicks a word they have never looked up, **When**
    the tooltip appears, **Then** the word is recorded in their
    personal vocabulary.
+5. **Given** the user is on a mobile/tablet device, **When** they tap
+   any word, **Then** the tooltip appears immediately regardless of
+   whether the word was previously looked up.
 
 ---
 
@@ -80,6 +83,13 @@ the word is visually marked and shows an instant tooltip.
    hover delay (0.5 seconds) before appearing.
 4. **Given** the user has been exposed to a word 5 or more times,
    **Then** the visual underline disappears (word assumed learned).
+5. **Given** the user views a tooltip for any vocabulary word, **When**
+   they choose to manually mark it as "known", **Then** the word's
+   underline disappears immediately and future encounters treat it
+   as learned.
+6. **Given** the user has a word marked as "known" (manually or by
+   exposure), **When** they choose to reset it to "learning", **Then**
+   the underline reappears and the exposure count resets to 0.
 
 ---
 
@@ -163,6 +173,13 @@ across multiple reading sessions.
 - What happens when the text contains non-Japanese characters
   (punctuation, numbers, romaji)? These are rendered as plain text
   with no tooltip interaction.
+- How does the tooltip behave on touch devices when the user taps
+  outside the tooltip? The tooltip dismisses on tap-outside or on
+  tapping a different word.
+- What happens when the user quickly moves the cursor across multiple
+  words on desktop? Only the word currently under the cursor triggers;
+  the previous tooltip dismisses after the ~300ms grace period if the
+  cursor does not enter it.
 
 ## Requirements *(mandatory)*
 
@@ -181,13 +198,27 @@ across multiple reading sessions.
   personal vocabulary with a timestamp.
 - **FR-006**: System MUST track the number of times the user has been
   exposed to each vocabulary word.
-- **FR-007**: Previously looked-up words MUST show tooltips instantly
-  on hover (no delay).
-- **FR-008**: Words never looked up MUST require a click or 0.5-second
-  hover delay before showing the tooltip.
+- **FR-007**: On desktop, previously looked-up words MUST show tooltips
+  instantly on hover (no delay). On mobile/tablet, a single tap MUST
+  show the tooltip.
+- **FR-008**: On desktop, words never looked up MUST require a click or
+  0.5-second hover delay before showing the tooltip. On mobile/tablet,
+  a single tap MUST show the tooltip (no distinction between known and
+  unknown words for tap interaction).
+- **FR-014**: The reader interface MUST be fully responsive, adapting
+  layout and interaction modes for desktop (hover + click) and
+  mobile/tablet (tap) devices.
+- **FR-016**: On desktop, the tooltip MUST remain visible while the
+  cursor is over the tooltip itself (hover-to-tooltip bridging with
+  ~300ms grace period). The tooltip dismisses when the cursor leaves
+  both the word and the tooltip area.
 - **FR-009**: Previously looked-up words MUST be visually
   distinguished in the text via underline styling that reflects
   exposure count.
+- **FR-015**: The tooltip MUST provide an option for the user to
+  manually mark a word as "known" (skipping the 5-exposure threshold)
+  or reset a word to "learning" status. The system otherwise operates
+  fully automatically with no separate vocabulary management interface.
 - **FR-010**: Cross-text examples MUST include the work title and
   author name for attribution.
 - **FR-011**: Cross-text examples MUST be navigable — clicking one
@@ -221,6 +252,14 @@ across multiple reading sessions.
 - Word boundaries and readings are determined during preprocessing,
   not at read time.
 - The initial content set consists of 5 classic Japanese short stories.
+
+## Clarifications
+
+### Session 2026-02-28
+
+- Q: MVP 是否需要支援手機/平板的觸控操作？ → A: 完整響應式支援 — 桌面版 hover + 手機版 tap，兩種不同的互動模式。
+- Q: 使用者是否需要手動管理詞彙狀態？ → A: 被動為主、可手動覆寫 — 系統自動追蹤，但使用者可在 tooltip 中手動標記「已學會」或「重新學習」。
+- Q: 桌面端 tooltip 關閉行為？ → A: 延遲消失 — 滑鼠可移進 tooltip 保持顯示（約 300ms 延遲），移出後消失。允許使用者操作 tooltip 內的連結和按鈕。
 
 ## Success Criteria *(mandatory)*
 

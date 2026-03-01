@@ -1,0 +1,151 @@
+{
+  "version": "test",
+  "languages": ["eng"],
+  "commonOnly": false,
+  "dictDate": "2026-01-01",
+  "dictRevisions": ["test"],
+  "tags": {
+    "n": "noun (common) (futsuumeishi)",
+    "v1": "Ichidan verb",
+    "v5r": "Godan verb with 'ru' ending",
+    "adj-i": "adjective (keiyoushi)",
+    "adj-na": "adjectival nouns or quasi-adjectives (keiyodoshi)",
+    "vs": "noun or participle which takes the aux. verb suru"
+  },
+  "words": [
+    {
+      "id": "1000001",
+      "kanji": [
+        { "common": true, "text": "猫", "tags": [] }
+      ],
+      "kana": [
+        { "common": true, "text": "ねこ", "tags": [], "appliesToKanji": ["*"] }
+      ],
+      "sense": [
+        {
+          "partOfSpeech": ["n"],
+          "appliesToKanji": ["*"],
+          "appliesToKana": ["*"],
+          "related": [],
+          "antonym": [],
+          "field": [],
+          "dialect": [],
+          "misc": [],
+          "info": [],
+          "languageSource": [],
+          "gloss": [
+            { "lang": "eng", "gender": null, "type": null, "text": "cat" },
+            { "lang": "eng", "gender": null, "type": null, "text": "puss" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1000002",
+      "kanji": [
+        { "common": true, "text": "走る", "tags": [] }
+      ],
+      "kana": [
+        { "common": true, "text": "はしる", "tags": [], "appliesToKanji": ["*"] }
+      ],
+      "sense": [
+        {
+          "partOfSpeech": ["v5r"],
+          "appliesToKanji": ["*"],
+          "appliesToKana": ["*"],
+          "related": [],
+          "antonym": [],
+          "field": [],
+          "dialect": [],
+          "misc": [],
+          "info": [],
+          "languageSource": [],
+          "gloss": [
+            { "lang": "eng", "gender": null, "type": null, "text": "to run" },
+            { "lang": "eng", "gender": null, "type": null, "text": "to dash" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1000003",
+      "kanji": [
+        { "common": true, "text": "高い", "tags": [] }
+      ],
+      "kana": [
+        { "common": true, "text": "たかい", "tags": [], "appliesToKanji": ["*"] }
+      ],
+      "sense": [
+        {
+          "partOfSpeech": ["adj-i"],
+          "appliesToKanji": ["*"],
+          "appliesToKana": ["*"],
+          "related": [],
+          "antonym": [],
+          "field": [],
+          "dialect": [],
+          "misc": [],
+          "info": [],
+          "languageSource": [],
+          "gloss": [
+            { "lang": "eng", "gender": null, "type": null, "text": "tall" },
+            { "lang": "eng", "gender": null, "type": null, "text": "high" },
+            { "lang": "eng", "gender": null, "type": null, "text": "expensive" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1000004",
+      "kanji": [],
+      "kana": [
+        { "common": true, "text": "する", "tags": [], "appliesToKanji": ["*"] }
+      ],
+      "sense": [
+        {
+          "partOfSpeech": ["vs"],
+          "appliesToKanji": ["*"],
+          "appliesToKana": ["*"],
+          "related": [],
+          "antonym": [],
+          "field": [],
+          "dialect": [],
+          "misc": [],
+          "info": [],
+          "languageSource": [],
+          "gloss": [
+            { "lang": "eng", "gender": null, "type": null, "text": "to do" },
+            { "lang": "eng", "gender": null, "type": null, "text": "to carry out" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1000005",
+      "kanji": [
+        { "common": true, "text": "食べる", "tags": [] }
+      ],
+      "kana": [
+        { "common": true, "text": "たべる", "tags": [], "appliesToKanji": ["*"] }
+      ],
+      "sense": [
+        {
+          "partOfSpeech": ["v1"],
+          "appliesToKanji": ["*"],
+          "appliesToKana": ["*"],
+          "related": [],
+          "antonym": [],
+          "field": [],
+          "dialect": [],
+          "misc": [],
+          "info": [],
+          "languageSource": [],
+          "gloss": [
+            { "lang": "eng", "gender": null, "type": null, "text": "to eat" },
+            { "lang": "eng", "gender": null, "type": null, "text": "to have a meal" }
+          ]
+        }
+      ]
+    }
+  ]
+}
