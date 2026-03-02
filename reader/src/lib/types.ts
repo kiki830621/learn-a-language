@@ -25,7 +25,6 @@ export type WordEntry = {
   base_form: string;
   pos: string;
   reading: string;
-  jmdict_def: string | null;
   ai_explanation: string | null;
 };
 
@@ -47,15 +46,3 @@ export type UserVocabRecord = {
 
 // Vocabulary status for UI
 export type VocabStatus = "unknown" | "new" | "learning" | "known";
-
-// POS categories for tooltip content strategy
-export const NOUN_POS = ["名詞"] as const;
-export const VERB_POS = ["動詞"] as const;
-export const ADJ_POS = ["形容詞", "形状詞"] as const;
-
-export function getTooltipStrategy(pos: string): "definition" | "examples" {
-  if (VERB_POS.includes(pos as any) || ADJ_POS.includes(pos as any)) {
-    return "examples";
-  }
-  return "definition";
-}

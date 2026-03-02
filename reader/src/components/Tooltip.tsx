@@ -14,7 +14,6 @@ import {
   FloatingFocusManager,
 } from "@floating-ui/react";
 import { createBrowserSupabase } from "@/lib/supabase-browser";
-import { getTooltipStrategy } from "@/lib/types";
 import type {
   Token,
   WordEntry,
@@ -90,7 +89,7 @@ export function Tooltip({
     // Q3: Fetch word entry (BCNF — no cross_text_examples / work_count)
     supabase
       .from("word_entries")
-      .select("id, base_form, pos, reading, jmdict_def, ai_explanation")
+      .select("id, base_form, pos, reading, ai_explanation")
       .eq("id", token.word_entry_id)
       .single()
       .then(({ data, error }) => {
@@ -213,8 +212,6 @@ function TooltipContent({
   onMarkAsKnown,
   onResetToLearning,
 }: TooltipContentProps) {
-  const strategy = getTooltipStrategy(wordEntry.pos);
-
   return (
     <>
       <div className="tooltip-header">
@@ -233,13 +230,31 @@ function TooltipContent({
       </div>
 
       <div className="tooltip-body">
-        {strategy === "definition" ? (
-          <DefinitionContent wordEntry={wordEntry} />
-        ) : (
-          <ExamplesContent
-            wordEntry={wordEntry}
-            crossTextExamples={crossTextExamples}
-          />
+        {wordEntry.ai_explanation && (
+          <p className="tooltip-ai-explanation">{wordEntry.ai_explanation}</p>
+        )}
+
+        {crossTextExamples.length > 0 && (
+          <div className="tooltip-cross-text">
+            <h4>他の作品での用例</h4>
+            <ul>
+              {crossTextExamples.map((example: CrossTextExample) => (
+                <li key={`${example.work_id}-${example.token_position}`}>
+                  <Link
+                    href={`/works/${example.work_id}?position=${example.token_position}`}
+                    className="tooltip-example-link"
+                  >
+                    <span className="tooltip-example-sentence">
+                      {example.sentence}
+                    </span>
+                    <span className="tooltip-example-source">
+                      — {example.work_title}（{example.author}）
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
 
@@ -266,54 +281,5 @@ function TooltipContent({
         </div>
       )}
     </>
-  );
-}
-
-function DefinitionContent({ wordEntry }: { readonly wordEntry: WordEntry }) {
-  if (!wordEntry.jmdict_def) return null;
-
-  return (
-    <div className="tooltip-definition">
-      <p>{wordEntry.jmdict_def}</p>
-    </div>
-  );
-}
-
-function ExamplesContent({
-  wordEntry,
-  crossTextExamples,
-}: {
-  readonly wordEntry: WordEntry;
-  readonly crossTextExamples: CrossTextExample[];
-}) {
-  return (
-    <div className="tooltip-examples">
-      {wordEntry.ai_explanation && (
-        <p className="tooltip-ai-explanation">{wordEntry.ai_explanation}</p>
-      )}
-
-      {crossTextExamples.length > 0 && (
-        <div className="tooltip-cross-text">
-          <h4>他の作品での用例</h4>
-          <ul>
-            {crossTextExamples.map((example: CrossTextExample) => (
-              <li key={`${example.work_id}-${example.token_position}`}>
-                <Link
-                  href={`/works/${example.work_id}?position=${example.token_position}`}
-                  className="tooltip-example-link"
-                >
-                  <span className="tooltip-example-sentence">
-                    {example.sentence}
-                  </span>
-                  <span className="tooltip-example-source">
-                    — {example.work_title}（{example.author}）
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
   );
 }

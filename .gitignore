@@ -41,6 +41,9 @@ npm-debug.log*
 # Vercel
 .vercel
 
+# References (cloned repos, large datasets)
+references/
+
 # Coverage
 coverage/
 .nyc_output/
